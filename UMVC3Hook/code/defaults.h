@@ -281,9 +281,11 @@ int recordedLength = 0;
 #define ReplayLength (60*120)
 #define ReplayBufferSize 550
 uint8_t replayBuffer[ReplayLength][ReplayBufferSize];
+uint8_t replayBuffer2[ReplayLength][ReplayBufferSize];
 
 void FUN_1402b41b0(longlong param_1)
 {
+	printf("replay %x\n", param_1);
 	if (!inputRefSet) {
 		inputRefSet = true;
 		inputRef = (uintptr_t)param_1;
@@ -295,6 +297,7 @@ void FUN_1402b41b0(longlong param_1)
 		if (recording) {
 			printf("recording %d\n", recordReplayIndex);
 			memcpy(&replayBuffer[recordReplayIndex], (uint8_t*)inputRef, ReplayBufferSize);
+			memcpy(&replayBuffer2[recordReplayIndex], (uint8_t*)inputRef+ 0x2c0, ReplayBufferSize);
 			recordReplayIndex++;
 			replayAvailable = true;
 			if (recordReplayIndex >= ReplayLength -1) {
@@ -305,6 +308,7 @@ void FUN_1402b41b0(longlong param_1)
 		if (replaying) {
 			printf("replaying %d\n", recordReplayIndex);
 			memcpy((uint8_t*)inputRef, &replayBuffer[recordReplayIndex], ReplayBufferSize);
+			memcpy((uint8_t*)inputRef+ 0x2c0, &replayBuffer2[recordReplayIndex], ReplayBufferSize);
 			recordReplayIndex++;
 			if (recordReplayIndex >= recordedLength) {
 				replaying = false;
@@ -442,7 +446,7 @@ void chartick(longlong* param1, intptr_t methaddr, const char* name) {
 		}
 	}
 	if (replaying) {
-		memcpy((uint8_t*)inputRef, &replayBuffer[recordReplayIndex], ReplayBufferSize);
+		memcpy((uint8_t*)inputRef + 0x2c0, &replayBuffer2[recordReplayIndex], ReplayBufferSize);
 	}
 
 	if (paused) return; // Returning here will should (in theory) pause the game 
