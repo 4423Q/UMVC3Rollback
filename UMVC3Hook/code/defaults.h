@@ -44,7 +44,7 @@ enum EGroundedState :uint8_t {
 
 enum ETagState :uint8_t {
 	NoTag = 0,
-	Active =0x0D,
+	Active = 0x0D,
 	Inactive = 0x09,
 	Active2 = 0x68,
 	TagginOut = 0xB4,
@@ -71,7 +71,7 @@ struct ScriptableFighter {
 	void Tick() {
 		((void(__fastcall*)(longlong*))_addr(tickPtr))((longlong*)fighter);
 	}
-	const char* GetGroundedState(){
+	const char* GetGroundedState() {
 		switch (fighter->groundedState)
 		{
 		case Grounded:
@@ -83,7 +83,7 @@ struct ScriptableFighter {
 			break;
 		}
 	}
-	const char* GetTagState(){
+	const char* GetTagState() {
 		switch (fighter->tagState)
 		{
 		case Active:
@@ -92,7 +92,7 @@ struct ScriptableFighter {
 		case Inactive:
 			return "Inactive";
 		case TagginOut:
-			return "TagginOut";	
+			return "TagginOut";
 		case TagginIn:
 			return "TagginIn";
 		default:
@@ -206,12 +206,12 @@ void SaveLoadState(bool save) {
 	{
 		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter, save, backupSize);
 		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x538, save, backupSize);
-		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x18,save, backupSize);
-		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x6d8,save, backupSize);
-		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x858,save, backupSize);
-		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x9d8,save, backupSize);
-		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0xb58,save, backupSize);
-		
+		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x18, save, backupSize);
+		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x6d8, save, backupSize);
+		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x858, save, backupSize);
+		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x9d8, save, backupSize);
+		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0xb58, save, backupSize);
+
 	}
 	auto team1 = block2 + 0x350;
 	auto team2 = block2 + 0x610;
@@ -269,6 +269,49 @@ struct physics_t
 	longlong param_1;
 };
 physics_t physics;
+
+uintptr_t inputRef;
+bool inputRefSet = false;
+
+bool recording = false;
+bool replaying = false;
+bool replayAvailable = false;
+int recordReplayIndex = 0;
+int recordedLength = 0;
+#define ReplayLength (60*120)
+#define ReplayBufferSize 550
+uint8_t replayBuffer[ReplayLength][ReplayBufferSize];
+
+void FUN_1402b41b0(longlong param_1)
+{
+	if (!inputRefSet) {
+		inputRefSet = true;
+		inputRef = (uintptr_t)param_1;
+		printf("replayu %x\n", param_1);
+	}
+
+	((void (*)(longlong))_addr(0x1402b41b0))(param_1);
+	if (inputRefSet) {
+		if (recording) {
+			printf("recording %d\n", recordReplayIndex);
+			memcpy(&replayBuffer[recordReplayIndex], (uint8_t*)inputRef, ReplayBufferSize);
+			recordReplayIndex++;
+			replayAvailable = true;
+			if (recordReplayIndex >= ReplayLength -1) {
+				recording = false;
+				recordedLength = recordReplayIndex - 1;
+			}
+		}
+		if (replaying) {
+			printf("replaying %d\n", recordReplayIndex);
+			memcpy((uint8_t*)inputRef, &replayBuffer[recordReplayIndex], ReplayBufferSize);
+			recordReplayIndex++;
+			if (recordReplayIndex >= recordedLength) {
+				replaying = false;
+			}
+		}
+	}
+}
 
 void  FUN_140521df0(longlong param_1)
 {
@@ -397,6 +440,9 @@ void chartick(longlong* param1, intptr_t methaddr, const char* name) {
 		if (!hasbeenset) {
 			printf("unknownaddr:%x - %s\n", (uintptr_t)param1, name);
 		}
+	}
+	if (replaying) {
+		memcpy((uint8_t*)inputRef, &replayBuffer[recordReplayIndex], ReplayBufferSize);
 	}
 
 	if (paused) return; // Returning here will should (in theory) pause the game 

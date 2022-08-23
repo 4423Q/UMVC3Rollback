@@ -80,6 +80,27 @@ void UMVC3Menu::Draw()
 	{
 		if (ImGui::BeginTabItem("Camera Control"))
 		{
+
+			if (!recording) {
+				if (ImGui::Button("Record")) {
+					recording = true;
+					replaying = false;
+					recordReplayIndex = 0;
+				}
+			}
+			else if (recordReplayIndex > 90) {
+				if (ImGui::Button("Stop record")) {
+					recording = false;
+					recordedLength = recordReplayIndex - 1;
+				}
+			}
+			if (replayAvailable && !recording && !replaying) {
+				if (ImGui::Button("Replay")) {
+					replaying = true;
+					recordReplayIndex = 0;
+				}
+			}
+
 			auto sigger = sigscan::get();
 
 			if (!pAddrSet) {
@@ -167,6 +188,9 @@ void UMVC3Menu::Draw()
 			if (ImGui::Button("Unpause")) {
 				paused = false;
 			}
+
+
+
 			ImGui::Text("RunAhead %d", runaheadcount);
 #define runaheadbtn(i) ImGui::SameLine();\
 			if (ImGui::Button(#i)) {\

@@ -4430,7 +4430,6 @@ void FUN_0x1400be8f0(longlong* param_1) {
 };
 
 void FUN_0x1400c84f0(longlong* param_1) {
-	printf("ryu");
 	chartick(param_1, 0x1400c84f0, "Ryu");
 
 };
@@ -4544,6 +4543,7 @@ void attachHooks(Trampoline* tramp, bool phys) {
 	InjectHook(_addr(0x1400f0d7d), tramp->Jump(FUN_0x1400f0d70), PATCH_CALL);
 	InjectHook(_addr(0x1400f2f06), tramp->Jump(FUN_0x1400f2eb0), PATCH_CALL);
 	InjectHook(_addr(0x1400f6861), tramp->Jump(FUN_0x1400f6850), PATCH_CALL);
+	InjectHook(_addr(0x140289c5a), tramp->Jump(FUN_1402b41b0), PATCH_CALL);
 	if (phys) {
 		InjectHook(_addr(0x14001af4f), tramp->Jump(FUN_1400199c0), PATCH_CALL);
 		InjectHook(_addr(0x1405b6c99), tramp->Jump(FUN_1405ab9a0), PATCH_CALL);
