@@ -94,10 +94,18 @@ void UMVC3Menu::Draw()
 					recordedLength = recordReplayIndex - 1;
 				}
 			}
-			if (replayAvailable && !recording && !replaying) {
+			if (replayAvailable && !recording) {
+				if (!replaying) {
+
 				if (ImGui::Button("Replay")) {
 					replaying = true;
 					recordReplayIndex = 0;
+				}
+				}
+				else if (recordReplayIndex > 90) {
+					if (ImGui::Button("Stop replay")) {
+						replaying = false;
+					}
 				}
 			}
 
