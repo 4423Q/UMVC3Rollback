@@ -97,10 +97,10 @@ void UMVC3Menu::Draw()
 			if (replayAvailable && !recording) {
 				if (!replaying) {
 
-				if (ImGui::Button("Replay")) {
-					replaying = true;
-					recordReplayIndex = 0;
-				}
+					if (ImGui::Button("Replay")) {
+						replaying = true;
+						recordReplayIndex = 0;
+					}
 				}
 				else if (recordReplayIndex > 90) {
 					if (ImGui::Button("Stop replay")) {
@@ -131,23 +131,26 @@ void UMVC3Menu::Draw()
 					else {
 						ImGui::Text("p%d:%llx %llx %s", i, scriptableFighters[i].fighter, scriptableFighters[i].tickPtr, scriptableFighters[i].name);
 					}
-					ImGui::Text("  X:%d",(int)scriptableFighters[i].fighter->vector.x);
-					ImGui::SameLine();
-					ImGui::Text("- Y:%d",(int)scriptableFighters[i].fighter->vector.y);
-					ImGui::SameLine();
-					ImGui::Text("- Vel:%d", (int)scriptableFighters[i].fighter->vector.xVelocity);
-					
-					ImGui::Text("  Anim:%x", scriptableFighters[i].fighter->anim );
-					ImGui::Text("  Special:%x", scriptableFighters[i].fighter->specialState);
-					
-					ImGui::Text("  Grounded:%s", scriptableFighters[i].GetGroundedState());
-					ImGui::Text("  TagState:%s", scriptableFighters[i].GetTagState());
+					if (scriptableFighters[i].fighter->tagState == ETagState::Active || scriptableFighters[i].fighter->tagState == ETagState::Active2)
+					{
+						ImGui::Text("  X:%d", (int)scriptableFighters[i].fighter->vector.x);
+						ImGui::SameLine();
+						ImGui::Text("- Y:%d", (int)scriptableFighters[i].fighter->vector.y);
+						ImGui::SameLine();
+						ImGui::Text("- Vel:%d", (int)scriptableFighters[i].fighter->vector.xVelocity);
+
+						ImGui::Text("  Anim:%x", scriptableFighters[i].fighter->anim);
+						ImGui::Text("  Special:%x", scriptableFighters[i].fighter->specialState);
+
+						ImGui::Text("  Grounded:%s", scriptableFighters[i].GetGroundedState());
+						ImGui::Text("  TagState:%s", scriptableFighters[i].GetTagState());
+					}
 				}
-				
+
 				auto block2 = *(uintptr_t*)_addr(0x140d47e68);
 				auto team1 = block2 + 0x350;
 				auto team2 = block2 + 0x610;
-				ImGui::Text("Team1:%llx ActiveFighter %x", team1, team1+0x48);
+				ImGui::Text("Team1:%llx ActiveFighter %x", team1, team1 + 0x48);
 				ImGui::Text("Team2:%llx ActiveFighter %x", team2, team2 + 0x48);
 			}
 
@@ -173,13 +176,13 @@ void UMVC3Menu::Draw()
 				hookCharacterTicks(tramp);
 			}*/
 
-		
+
 
 			if (ImGui::Button("Attach")) {
-				attachHooks(tramp,false);
+				attachHooks(tramp, false);
 			}
 			if (ImGui::Button("AttachWphys")) {
-				attachHooks(tramp,true);
+				attachHooks(tramp, true);
 			}
 			if (ImGui::Button("Toggle runahead")) {
 				runAheadEnabled = !runAheadEnabled;
@@ -213,7 +216,7 @@ void UMVC3Menu::Draw()
 				runaheadbtn(5)
 				runaheadbtn(6)
 
-			ImGui::Text("Paused %d", (int)paused);
+				ImGui::Text("Paused %d", (int)paused);
 			ImGui::SameLine();
 			if (ImGui::Button("1")) {
 				paused = true;

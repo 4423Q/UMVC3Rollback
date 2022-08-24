@@ -4545,8 +4545,8 @@ void attachHooks(Trampoline* tramp, bool phys) {
 	InjectHook(_addr(0x1400f6861), tramp->Jump(FUN_0x1400f6850), PATCH_CALL);
 	InjectHook(_addr(0x140289c5a), tramp->Jump(FUN_1402b41b0), PATCH_CALL);
 	if (phys) {
-		InjectHook(_addr(0x14001af4f), tramp->Jump(FUN_1400199c0), PATCH_CALL);
-		InjectHook(_addr(0x1405b6c99), tramp->Jump(FUN_1405ab9a0), PATCH_CALL);
+		//InjectHook(_addr(0x14001af4f), tramp->Jump(FUN_1400199c0), PATCH_CALL);
+		//InjectHook(_addr(0x1405b6c99), tramp->Jump(FUN_1405ab9a0), PATCH_CALL);
 		InjectHook(_addr(0x1402594a9), tramp->Jump(FUN_140521df0), PATCH_CALL);
 	}
 };

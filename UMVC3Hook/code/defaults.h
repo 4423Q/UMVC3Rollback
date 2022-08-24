@@ -66,6 +66,7 @@ struct Fighter { // TODO map this out
 
 struct ScriptableFighter {
 	Fighter* fighter = 0;
+	intptr_t fighterController = 0; // TODO find better name for this
 	char* name = nullptr;
 	uintptr_t tickPtr = 0x14004bd30;
 	void Tick() {
@@ -101,6 +102,14 @@ struct ScriptableFighter {
 		}
 	}
 };
+
+struct physics_t
+{
+	bool inited = false;
+	longlong param_1;
+};
+physics_t physics;
+
 
 ScriptableFighter scriptableFighters[6] = { 0 };
 
@@ -212,12 +221,19 @@ void SaveLoadState(bool save) {
 		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0x9d8, save, backupSize);
 		SaveLoadPtr((intptr_t)scriptableFighters[i].fighter + 0xb58, save, backupSize);
 
+
+		
+
 	}
+	SaveLoadPtr((intptr_t)(mysterytable),save,9200);
 	auto team1 = block2 + 0x350;
 	auto team2 = block2 + 0x610;
+	SaveLoadPtr(block2, save, 2272);
+	//don't think these 2 are needed anymore
 	SaveLoadPtr(team1, save, teamBackupSize);
 	SaveLoadPtr(team2, save, teamBackupSize);
-
+	if(physics.inited)
+		SaveLoadPtr((intptr_t)physics.param_1, save, 11424);
 	saveMemoryInited = true;
 }
 
@@ -252,7 +268,8 @@ struct physicsX_t
 physicsX_t physicsX;
 //physicsY
 longlong* FUN_1400199c0(longlong param_1, longlong* param_2, longlong param_3, longlong* param_4, longlong param_5) {
-	printf("physY %x %x %x %x %x\n", param_1, param_2, param_3, param_4, param_5);
+	if (!physicsY.inited)
+		printf("physY %x %x %x %x %x\n", param_1, param_2, param_3, param_4, param_5);
 	physicsY.inited = true;
 	physicsY.param_1 = param_1;
 	physicsY.param_2 = param_2;
@@ -263,12 +280,7 @@ longlong* FUN_1400199c0(longlong param_1, longlong* param_2, longlong param_3, l
 	return ((longlong * (*)(longlong, longlong*, longlong, longlong*, longlong))_addr(0x1400199c0))(param_1, param_2, param_3, param_4, param_5);
 }
 
-struct physics_t
-{
-	bool inited = false;
-	longlong param_1;
-};
-physics_t physics;
+
 
 uintptr_t inputRef;
 bool inputRefSet = false;
@@ -319,6 +331,8 @@ void FUN_1402b41b0(longlong param_1)
 
 void  FUN_140521df0(longlong param_1)
 {
+	if (!physics.inited)
+		printf("phys:%x",param_1);
 	physics.inited = true;
 	physics.param_1 = param_1;
 	((void (*)(longlong))_addr(0x140521df0))(param_1);
@@ -327,7 +341,8 @@ void  FUN_140521df0(longlong param_1)
 undefined2* FUN_1405ab9a0(longlong* param_1, undefined2* param_2, longlong* param_3, longlong* param_4,
 	longlong param_5, undefined* param_6, undefined* param_7, undefined* param_8,
 	longlong* param_9) {
-	printf("physX %x %x %x %x %x\n", param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8,
+	if(!physicsX.inited)
+		printf("physX %x %x %x %x %x\n", param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8,
 		param_9);
 	physicsX.inited = true;
 	physicsX.param_1 = param_1;
@@ -465,6 +480,9 @@ void chartick(longlong* param1, intptr_t methaddr, const char* name) {
 				for (size_t i = 0; i < 6; i++)
 				{
 					scriptableFighters[i].Tick();
+					/*if (physics.inited) {
+						((void (__fastcall*)(longlong))_addr(0x140521df0))(physics.param_1);
+					}*/
 					//Physics doesn't work during runahead; This should in theory fix it. But doesn't
 				/*	if (physicsY.inited) {
 						((longlong * (__fastcall*)(longlong, longlong*, longlong, longlong*, longlong))_addr(0x1400199c0))(physicsY.param_1, physicsY.param_2, physicsY.param_3, physicsY.param_4, physicsY.param_5);*/
