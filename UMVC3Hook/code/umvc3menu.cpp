@@ -57,6 +57,11 @@ void UMVC3Menu::Initialize()
 	camRot = { 0,0,0 };
 }
 
+void UMVC3Menu::PostInit()
+{
+	hookCtrs(tramp);
+}
+
 void UMVC3Menu::Process()
 {
 	UpdateControls();

@@ -10,6 +10,7 @@
 #include "code/eSettingsManager.h"
 #include "code/UMVC3Camera.h"
 #include <Windows.h>
+//#include "code/generated.h"
 
 using namespace Memory::VP;
 
@@ -85,6 +86,7 @@ long __stdcall hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 		Notifications->SetNotificationTime(5500);
 		Notifications->PushNotification("UMVC3Hook %s is running! Press F1 to open the menu.", UMVC3HOOK_VERSION);
 		first_msg = false;
+		
 	}
 	Notifications->Draw();
 
@@ -149,6 +151,7 @@ void OnInitializeHook()
 	InjectHook(_addr(0x14001B451), tramp->Jump(&UMVC3Camera::HookedSetRotation), PATCH_CALL);
 	InjectHook(_addr(0x14001B471), tramp->Jump(&UMVC3Camera::HookedSetPosition), PATCH_CALL);
 	InjectHook(_addr(0x14001A490), tramp->Jump(UMVC3Hooks::HookCamera), PATCH_JUMP);
+	TheMenu->PostInit();
 	//InjectHook(_addr(0x140650c10), tramp->Jump(InitMainLoop), PATCH_JUMP);//parts of ui & particles
 	//InjectHook(_addr(0x14004ad20), tramp->Jump(InitMainLoop), PATCH_JUMP);//parts pyshics
 	//InjectHook(_addr(0x14004b9d0), tramp->Jump(InitMainLoop), PATCH_JUMP);//parts pyshics

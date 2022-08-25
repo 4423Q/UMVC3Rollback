@@ -281,6 +281,18 @@ longlong* FUN_1400199c0(longlong param_1, longlong* param_2, longlong param_3, l
 }
 
 
+//AnmEditorSprite
+undefined8* FUN_14045d860(undefined8* param_1, char* param_2, longlong param_3, ulonglong param_4, int param_5,int param_6, uint8_t param_7) {
+	printf("%s %llx %llx\n", param_2,param_1,param_3);
+	return ((undefined8 * (*)(undefined8 * , char* , longlong , ulonglong , int , int , uint8_t))_addr(0x14045d860))(param_1, param_2, param_3, param_4, param_5,param_6,param_7);
+}
+
+
+undefined8* FUN_14001c210(undefined8* param_1, char* param_2, char* param_3, undefined8 param_4,
+	uint16_t param_5) {
+	//printf("%s %llx\n", param_3,param_4);
+	return ((undefined8 * (*)(undefined8 *, char*, char*, undefined8,uint16_t))_addr(0x14001c210))(param_1, param_2, param_3, param_4, param_5);
+}
 
 uintptr_t inputRef;
 bool inputRefSet = false;

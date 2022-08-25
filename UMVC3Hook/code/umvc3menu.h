@@ -18,6 +18,7 @@ public:
 	float  camFov;
 
 	void Initialize();
+	void PostInit();
 	void Process();
 	void Draw();
 	void UpdateControls();
